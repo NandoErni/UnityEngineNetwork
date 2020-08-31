@@ -6,7 +6,7 @@ namespace UnityEngineNetwork.Server {
   public interface IServer {
     #region Properties
     /// <summary>The repository for managing all request from and to the clients.</summary>
-    ClientRepository ClientRepository { get; }
+    BaseClientRepository ClientRepository { get; }
 
     /// <summary>All available clients. To get all connected clients, call <see cref="Client.IsConnected"/></summary>
     Dictionary<int, Client> Clients { get; }
@@ -26,7 +26,7 @@ namespace UnityEngineNetwork.Server {
     /// <param name="clientRepository">The client repository</param>
     /// <param name="maxClients">The maximum nuber of players</param>
     /// <param name="port">The port of the server.</param>
-    void Start(ClientRepository clientRepository, int maxClients, int port = Constants.DefaultPort);
+    void Start(BaseClientRepository clientRepository, int maxClients, int port = Constants.DefaultPort);
 
     /// <summary>Stops the server.</summary>
     void Stop();

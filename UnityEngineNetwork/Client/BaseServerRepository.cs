@@ -2,7 +2,7 @@
 
 namespace UnityEngineNetwork.Client {
   /// <summary>Repository for all communication between client and server</summary>
-  public abstract class ServerRepository {
+  public abstract class BaseServerRepository {
 
     /// <summary>Gets called when the client receives the welcome message from the server.</summary>
     public event OnWelcomeReceivedEventHandler OnWelcomeReceived;

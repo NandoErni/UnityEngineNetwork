@@ -11,9 +11,4 @@ namespace UnityEngineNetwork {
       Protocol = protocol;
     }
   }
-
-  public enum Protocol {
-    TCP,
-    UDP
-  }
 }

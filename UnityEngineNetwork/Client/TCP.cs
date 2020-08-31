@@ -11,6 +11,8 @@ namespace UnityEngineNetwork.Client {
 
     private byte[] _receiveBuffer;
 
+    public event OnConnectEventHandler OnConnect;
+
     public void Connect() {
       Socket = new TcpClient {
         ReceiveBufferSize = Constants.DataBufferSize,
@@ -30,7 +32,9 @@ namespace UnityEngineNetwork.Client {
         throw new ConnectionFailedException($"Unable to connect to Server {Client.Instance.ServerIpAddress}.");
       }
 
-      Client.Instance.IsConnected = true; // todo: event
+      Client.Instance.IsConnected = true;
+
+      OnConnect?.Invoke(this, new EventArgs());
 
       _networkStream = Socket.GetStream();
 

@@ -11,6 +11,8 @@ namespace UnityEngineNetwork {
 
   public delegate void OnDisconnectEventHandler(object sender, EventArgs e);
 
+  public delegate void OnConnectEventHandler(object sender, EventArgs e);
+
   public delegate void OnServerStartedEventHandler(object sender, EventArgs e);
 
   public delegate void OnServerStoppedEventHandler(object sender, EventArgs e);

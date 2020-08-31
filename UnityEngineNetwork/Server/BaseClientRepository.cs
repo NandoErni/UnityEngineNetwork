@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace UnityEngineNetwork.Server {
-  public abstract class ClientRepository {
+  public abstract class BaseClientRepository {
     #region events
     public event OnWelcomeReceivedEventHandler OnWelcomeReceived;
     #endregion

@@ -14,7 +14,7 @@ namespace UnityEngineNetwork.Client {
     #endregion
 
     #region Variables
-    public ServerRepository ServerRepository { get; private set; }
+    public BaseServerRepository ServerRepository { get; private set; }
 
     public TCP Tcp;
 
@@ -45,6 +45,8 @@ namespace UnityEngineNetwork.Client {
 
     #region Events
     public event OnDisconnectEventHandler OnDisconnect;
+
+    public event OnConnectEventHandler OnConnect;
     #endregion
 
     #region Constructor
@@ -62,7 +64,7 @@ namespace UnityEngineNetwork.Client {
       Tcp.Connect();
     }
 
-    public void ConnectToServer(ServerRepository serverRepository, string ipAddress, string username, int port = Constants.DefaultPort) {
+    public void ConnectToServer(BaseServerRepository serverRepository, string username, string ipAddress = Constants.LocalHost, int port = Constants.DefaultPort) {
       if (String.IsNullOrEmpty(username.Trim())) {
         throw new ArgumentException($"The username '{username}' is not valid");
       }
@@ -82,6 +84,7 @@ namespace UnityEngineNetwork.Client {
       Client.Instance.Username = username;
       Tcp = new TCP();
       Udp = new UDP();
+      Tcp.OnConnect += (sender, e) => { OnConnect?.Invoke(this, e); };
       ConnectToServer();
     }
 

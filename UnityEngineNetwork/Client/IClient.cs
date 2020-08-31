@@ -5,7 +5,7 @@ namespace UnityEngineNetwork.Client {
   public interface IClient {
     #region Properties
     /// <summary>Repository for all communication between client and server</summary>
-    ServerRepository ServerRepository { get; }
+    BaseServerRepository ServerRepository { get; }
 
     /// <summary>The Player id. can be used to determine which player number the current client is.</summary>
     int Id { get; }
@@ -30,7 +30,7 @@ namespace UnityEngineNetwork.Client {
     /// <param name="username">The username of this client</param>
     /// <param name="serverRepository">The server repository</param>
     /// <exception cref="ConnectionFailedException">Gets called if the connection fails.</exception>
-    void ConnectToServer(ServerRepository serverRepository, string ipAddress, string username, int port = Constants.DefaultPort);
+    void ConnectToServer(BaseServerRepository serverRepository, string username, string ipAddress = Constants.LocalHost, int port = Constants.DefaultPort);
 
     /// <summary>Adds a packet handler. The packet handler is used to handle incomming packets from the server. 
     /// The id cannot be 0, because 0 is already used to send username and client id..</summary>
@@ -39,7 +39,7 @@ namespace UnityEngineNetwork.Client {
     /// <exception cref="ArgumentException">Is thrown when the id is below 1</exception>
     void AddPacketHandler(int id, Client.PacketHandler handler);
 
-    /// <summary>Disconnects all connections</summary>
+    /// <summary>Disconnects all connections.</summary>
     void Disconnect();
 
     /// <summary>Call this method inside of Unitys Update() method.</summary>
@@ -47,8 +47,11 @@ namespace UnityEngineNetwork.Client {
     #endregion
 
     #region Events
-    /// <summary>Gets called when the client disconnects all connections</summary>
+    /// <summary>Gets called when the client disconnects all connections.</summary>
     event OnDisconnectEventHandler OnDisconnect;
+
+    /// <summary>Gets called when the client is connected to the server.</summary>
+    public event OnConnectEventHandler OnConnect;
     #endregion
   }
 }

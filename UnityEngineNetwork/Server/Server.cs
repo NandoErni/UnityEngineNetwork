@@ -13,7 +13,7 @@ namespace UnityEngineNetwork.Server {
     #endregion
 
     #region Variables
-    public ClientRepository ClientRepository { get; private set; }
+    public BaseClientRepository ClientRepository { get; private set; }
 
     public Dictionary<int, Client> Clients { get; private set; } = new Dictionary<int, Client>();
 
@@ -70,7 +70,7 @@ namespace UnityEngineNetwork.Server {
     #endregion
 
     #region Methods
-    public void Start(ClientRepository clientRepository, int maxPlayers, int port = Constants.DefaultPort) {
+    public void Start(BaseClientRepository clientRepository, int maxPlayers, int port = Constants.DefaultPort) {
       ClientRepository = clientRepository;
       MaxClients = maxPlayers;
       Port = port;
