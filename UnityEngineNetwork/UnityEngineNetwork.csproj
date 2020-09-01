@@ -4,4 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Users\nando\source\repos\UnityEngineNetwork\UnityEngineNetwork\UnityEngineNetwork.xml</DocumentationFile>
+  </PropertyGroup>
+
 </Project>
