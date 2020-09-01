@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngineNetwork.Client;
-using UnityEngineNetwork.Server;
-
-namespace UnityEngineNetwork {
+﻿namespace UnityEngineNetwork.Client {
   public abstract class BaseClientNetworkManager {
     /// <summary>The client singleton</summary>
-    protected IClient ClientInstance => Client.Client.Instance;
+    protected IClient ClientInstance => Client.Instance;
 
     public BaseClientNetworkManager() {
       InitPacketHandlers();
