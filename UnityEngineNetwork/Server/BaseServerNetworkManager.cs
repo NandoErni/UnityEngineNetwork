@@ -1,13 +1,10 @@
 ﻿namespace UnityEngineNetwork.Server {
-  public abstract class BaseServerNetworkManager {
-    /// <summary>The server singleton</summary>
-    protected IServer ServerInstance => Server.Instance;
+  public abstract class BaseServerNetworkManager : BaseNetworkManager {
+    public BaseServerNetworkManager() : base() {
 
-    public BaseServerNetworkManager() {
-      InitPacketHandlers();
     }
 
-    /// <summary>Initilizes all packet handlers.</summary>
-    protected abstract void InitPacketHandlers();
+    /// <summary>The server singleton</summary>
+    protected IServer ServerInstance => Server.Instance;
   }
 }

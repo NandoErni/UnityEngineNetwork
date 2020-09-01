@@ -1,13 +1,8 @@
 ﻿namespace UnityEngineNetwork.Client {
-  public abstract class BaseClientNetworkManager {
+  public abstract class BaseClientNetworkManager : BaseNetworkManager {
+    public BaseClientNetworkManager() : base() {
+    }
     /// <summary>The client singleton</summary>
     protected IClient ClientInstance => Client.Instance;
-
-    public BaseClientNetworkManager() {
-      InitPacketHandlers();
-    }
-
-    /// <summary>Initilizes all packet handlers.</summary>
-    protected abstract void InitPacketHandlers();
   }
 }
