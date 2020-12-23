@@ -1,6 +1,9 @@
 
 # UnityEngineNetwork
-UnityEngineNetwork is a C# Library for Unity to implement networking functionalities into a game. This library is split into to parts. The `UnityEngineNetwork.Server` namespace and the `UnityEngineNetwork.Client` namespace.
+UnityEngineNetwork is a C# Library for Unity to implement networking functionalities into a game. This library is split into two main namespaces: the `UnityEngineNetwork.Server` namespace and the `UnityEngineNetwork.Client` namespace.
+
+This library is heavily inspired by https://github.com/tom-weiland/tcp-udp-networking
+
 ## Get started
 ### Create a client
 #### Namespaces:
