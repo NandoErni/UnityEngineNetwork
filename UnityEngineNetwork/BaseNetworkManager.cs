@@ -3,6 +3,6 @@
   public abstract class BaseNetworkManager {
 
     /// <summary>Initilizes all packet handlers.</summary>
-    protected abstract void InitPacketHandlers();
+    public abstract void InitPacketHandlers();
   }
 }
