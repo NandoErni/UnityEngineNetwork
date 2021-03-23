@@ -2,8 +2,10 @@
 using System.Net.Sockets;
 
 namespace UnityEngineNetwork.Client {
+  /// <summary>A class to handle all TCP requests.</summary>
   public class TCP {
-    public TcpClient Socket;
+    /// <summary>The tcp client</summary>
+    public TcpClient Socket { get; private set; }
 
     private NetworkStream _networkStream;
 
@@ -11,8 +13,10 @@ namespace UnityEngineNetwork.Client {
 
     private byte[] _receiveBuffer;
 
+    /// <summary>Gets invoked when a connection to the server has been established.</summary>
     public event OnConnectEventHandler OnConnect;
 
+    /// <summary>Connects to the server.</summary>
     public void Connect() {
       Socket = new TcpClient {
         ReceiveBufferSize = Constants.DataBufferSize,
@@ -64,6 +68,8 @@ namespace UnityEngineNetwork.Client {
       }
     }
 
+    /// <summary>Sends a packet to the server.</summary>
+    /// <param name="packet">The packet</param>
     public void SendData(Packet packet) {
       if (!Client.Instance.IsConnected) {
         throw new ConnectionFailedException("The client is not connected to the server!");
@@ -109,6 +115,7 @@ namespace UnityEngineNetwork.Client {
       return false;
     }
 
+    /// <summary>Disconnects from the server.</summary>
     public void Disconnect() {
       Socket.Close();
       _networkStream = null;

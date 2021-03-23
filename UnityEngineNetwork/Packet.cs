@@ -4,6 +4,7 @@ using System.Numerics;
 using System.Text;
 
 namespace UnityEngineNetwork {
+  /// <summary>Represents a packet/data</summary>
   public class Packet : IDisposable {
     private List<byte> _buffer;
     private byte[] _readableBuffer;
@@ -294,20 +295,15 @@ namespace UnityEngineNetwork {
 
     private bool disposed = false;
 
-    protected virtual void Dispose(bool disposing) {
+    /// <summary>Disposes this packet</summary>
+    public void Dispose() {
       if (!disposed) {
-        if (disposing) {
-          _buffer = null;
-          _readableBuffer = null;
-          _readPos = 0;
-        }
+        _buffer = null;
+        _readableBuffer = null;
+        _readPos = 0;
 
         disposed = true;
       }
-    }
-
-    public void Dispose() {
-      Dispose(true);
       GC.SuppressFinalize(this);
     }
   }

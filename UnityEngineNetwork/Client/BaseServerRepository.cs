@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace UnityEngineNetwork.Client {
+﻿namespace UnityEngineNetwork.Client {
   /// <summary>Repository for all communication between client and server</summary>
   public abstract class BaseServerRepository {
 
@@ -11,14 +9,14 @@ namespace UnityEngineNetwork.Client {
     /// <param name="packet">The packet</param>
     protected void SendTCPData(Packet packet) {
       packet.WriteLength();
-      Client.Instance.Tcp.SendData(packet);
+      Client.Instance.SendTCPData(packet);
     }
 
     /// <summary>Sends the specified packet to the Server using UDP.</summary>
     /// <param name="packet">The packet</param>
     protected void SendUDPData(Packet packet) {
       packet.WriteLength();
-      Client.Instance.Udp.SendData(packet);
+      Client.Instance.SendUDPData(packet);
     }
 
     /// <summary>Handles the welcome message from the server.</summary>
@@ -30,7 +28,7 @@ namespace UnityEngineNetwork.Client {
       Client.Instance.InitId(id);
       SendWelcomeReceived();
 
-      Client.Instance.Udp.Connect(((IPEndPoint)Client.Instance.Tcp.Socket.Client.LocalEndPoint).Port);
+      Client.Instance.ConnectToUdp();
 
       OnWelcomeReceived?.Invoke(this, new WelcomeEventArgs(message));
     }

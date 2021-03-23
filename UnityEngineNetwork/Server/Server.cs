@@ -5,28 +5,37 @@ using System.Net;
 using System.Net.Sockets;
 
 namespace UnityEngineNetwork.Server {
+  /// <summary>The server which handles all connected clients.</summary>
   public sealed class Server : IServer {
     #region Static
-    public static Server Instance => _instance;
+    /// <summary>The singleton instance</summary>
+    internal static Server Instance => _instance;
 
     private static readonly Server _instance = new Server();
     #endregion
 
     #region Variables
+    /// <summary>The repository for all client requests</summary>
     public BaseClientRepository ClientRepository { get; private set; }
 
+    /// <summary>All clients with their unique ID</summary>
     public Dictionary<int, Client> Clients { get; private set; } = new Dictionary<int, Client>();
 
+    /// <summary>Max number of clients that are able to connect</summary>
     public int MaxClients { get; private set; }
 
+    /// <summary>The port which clients can connect to</summary>
     public int Port { get; private set; }
 
-    public Dictionary<int, PacketHandler> PacketHandlers = new Dictionary<int, PacketHandler>();
+    /// <summary>Dictionary of all packet handlers</summary>
+    public Dictionary<int, PacketHandler> PacketHandlers { get; private set; } = new Dictionary<int, PacketHandler>();
 
-    public TcpListener TcpListener { get; private set; }
+    private TcpListener _tcpListener;
 
+    /// <summary>The udp listener</summary>
     public UdpClient UdpListener { get; private set; }
 
+    /// <summary>Indicates whther the server is running</summary>
     public bool IsRunning { get; private set; }
 
     private readonly List<Action> _executeOnMainThread = new List<Action>();
@@ -39,16 +48,23 @@ namespace UnityEngineNetwork.Server {
     #endregion
 
     #region Delegates
+    /// <summary>Delegate for a packet handler</summary>
+    /// <param name="clientId">The client id</param>
+    /// <param name="packet">The packet</param>
     public delegate void PacketHandler(int clientId, Packet packet);
     #endregion
 
     #region Events
+    /// <summary>Gets invoked when a client connects.</summary>
     public event OnClientConnectedEventHandler OnClientConnected;
 
+    /// <summary>Gets invoked when a client diconnects.</summary>
     public event OnClientDisconnectedEventHandler OnClientDisconnected;
 
+    /// <summary>Gets invoked when the server starts.</summary>
     public event OnServerStartedEventHandler OnServerStarted;
 
+    /// <summary>Gets invoked when the server stopped.</summary>
     public event OnServerStoppedEventHandler OnServerStopped;
     #endregion
 
@@ -70,16 +86,20 @@ namespace UnityEngineNetwork.Server {
     #endregion
 
     #region Methods
-    public void Start(BaseClientRepository clientRepository, int maxPlayers, int port = Constants.DefaultPort) {
+    /// <summary>Starts the server</summary>
+    /// <param name="clientRepository">The client repository which handles the communication to and from the clients</param>
+    /// <param name="maxClients">The maximum amounts of connected clients</param>
+    /// <param name="port">The port</param>
+    public void Start(BaseClientRepository clientRepository, int maxClients, int port = Constants.DefaultPort) {
       ClientRepository = clientRepository;
-      MaxClients = maxPlayers;
+      MaxClients = maxClients;
       Port = port;
 
       InitServerData();
 
-      TcpListener = new TcpListener(IPAddress.Any, Port);
-      TcpListener.Start();
-      TcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
+      _tcpListener = new TcpListener(IPAddress.Any, Port);
+      _tcpListener.Start();
+      _tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
 
       UdpListener = new UdpClient(Port);
       UdpListener.BeginReceive(UDPReceiveCallback, null);
@@ -89,14 +109,18 @@ namespace UnityEngineNetwork.Server {
       OnServerStarted?.Invoke(this, new EventArgs());
     }
 
+    /// <summary>Stops the server</summary>
     public void Stop() {
       Clients = new Dictionary<int, Client>();
-      TcpListener.Stop();
+      _tcpListener.Stop();
       UdpListener.Close();
       IsRunning = false;
       OnServerStopped?.Invoke(this, new EventArgs());
     }
 
+    /// <summary>Adds a packet handler</summary>
+    /// <param name="id">The packet handler id</param>
+    /// <param name="handler">The packet handler</param>
     public void AddPacketHandler(int id, PacketHandler handler) {
       if (id == 0 && PacketHandlers.Any()) {
         throw new ArgumentException("The id cannot be 0, because 0 is already used to send username and client id.");
@@ -107,6 +131,9 @@ namespace UnityEngineNetwork.Server {
       PacketHandlers.Add(id, handler);
     }
 
+    /// <summary>Gets a random client id</summary>
+    /// <param name="hasToBeConnected">Indicates whether the pciked client has to be connected to the server</param>
+    /// <returns>the client id</returns>
     public int GetRandomClientId(bool hasToBeConnected = true) {
       int clientId;
       Random random = new Random();
@@ -123,6 +150,10 @@ namespace UnityEngineNetwork.Server {
       return clientId;
     }
 
+    /// <summary>Replaces all characters of the blocklist from the specified string</summary>
+    /// <param name="message">The string which will be cleaned</param>
+    /// <param name="replacementChar">The char which will replace the blocked words</param>
+    /// <returns></returns>
     public string FilterOutBlockedStrings(string message, char replacementChar = '*') {
       foreach (var offensiveWord in _stringBlockList) {
         if (message.Contains(offensiveWord)) {
@@ -139,6 +170,8 @@ namespace UnityEngineNetwork.Server {
       return message;
     }
 
+    /// <summary>Adds a string to the blocklist</summary>
+    /// <param name="stringToBlock">The string to block</param>
     public void AddStringToBlock(string stringToBlock) {
       _stringBlockList.Add(stringToBlock);
     }
@@ -146,8 +179,8 @@ namespace UnityEngineNetwork.Server {
 
     #region Callbacks
     private void TCPConnectCallback(IAsyncResult result) {
-      TcpClient client = TcpListener.EndAcceptTcpClient(result);
-      TcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
+      TcpClient client = _tcpListener.EndAcceptTcpClient(result);
+      _tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
 
       for (int i = 1; i <= MaxClients; i++) {
         if (Clients[i].Tcp.Socket == null) {
@@ -184,7 +217,7 @@ namespace UnityEngineNetwork.Server {
         }
 
         if (Clients[clientId].Udp.EndPoint.ToString() == clientEndPoint.ToString()) {
-          Clients[clientId].Udp.HanldeData(packet);
+          Clients[clientId].Udp.HandleData(packet);
         }
       }
     }

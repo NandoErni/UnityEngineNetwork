@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace UnityEngineNetwork {
+﻿namespace UnityEngineNetwork {
+  /// <summary>Represents a network manager</summary>
   public abstract class BaseNetworkManager {
+
+    /// <summary>Creates a new network manager and initilizes the packet handlers</summary>
     public BaseNetworkManager() {
       InitPacketHandlers();
     }

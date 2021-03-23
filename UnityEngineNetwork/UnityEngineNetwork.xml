@@ -4,11 +4,23 @@
         <name>UnityEngineNetwork</name>
     </assembly>
     <members>
+        <member name="T:UnityEngineNetwork.BaseNetworkManager">
+            <summary>Represents a network manager</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.BaseNetworkManager.#ctor">
+            <summary>Creates a new network manager and initilizes the packet handlers</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.BaseNetworkManager.InitPacketHandlers">
+            <summary>Initilizes all packet handlers.</summary>
+        </member>
+        <member name="T:UnityEngineNetwork.Client.BaseClientNetworkManager">
+            <summary>Manages the client to server communication</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.Client.BaseClientNetworkManager.#ctor">
+            <summary>Manages the client to server communication</summary>
+        </member>
         <member name="P:UnityEngineNetwork.Client.BaseClientNetworkManager.ClientInstance">
             <summary>The client singleton</summary>
-        </member>
-        <member name="M:UnityEngineNetwork.Client.BaseClientNetworkManager.InitPacketHandlers">
-            <summary>Initilizes all packet handlers.</summary>
         </member>
         <member name="T:UnityEngineNetwork.Client.BaseServerRepository">
             <summary>Repository for all communication between client and server</summary>
@@ -31,7 +43,66 @@
         <member name="M:UnityEngineNetwork.Client.BaseServerRepository.SendWelcomeReceived">
             <summary>Sends a packet to the server containing the username.</summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "T:UnityEngineNetwork.Client.Client" -->
+        <member name="T:UnityEngineNetwork.Client.Client">
+            <summary>The client singleton to send and handle packets to and from the Server</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Client.Client.Instance">
+            <summary>The singleton instance</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Client.Client.ServerRepository">
+            <summary>The repository for all requests from and to the server</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Client.Client.Id">
+            <summary>The client id</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Client.Client.ServerIpAddress">
+            <summary>The server ip address</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Client.Client.Port">
+            <summary>The server port</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Client.Client.Username">
+            <summary>The username of the client</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Client.Client.IsConnected">
+            <summary>Indicates whther the client is connected or not</summary>
+        </member>
+        <member name="T:UnityEngineNetwork.Client.Client.PacketHandler">
+            <summary>A delegate for packet handlers</summary>
+            <param name="packet"></param>
+        </member>
+        <member name="E:UnityEngineNetwork.Client.Client.OnDisconnect">
+            <summary>Gets invoked when the client has disconnected from the server</summary>
+        </member>
+        <member name="E:UnityEngineNetwork.Client.Client.OnConnect">
+            <summary>Gets invoked when the client has connected to the server</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.Client.Client.ReconnectToServer">
+            <summary>Reconnects to the server by sending a welcome message if there was already a connection established before</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.Client.Client.ConnectToServer(UnityEngineNetwork.Client.BaseServerRepository,System.String,System.String,System.Int32)">
+            <summary>Connects to the server</summary>
+            <param name="serverRepository">The server repository to use with this client</param>
+            <param name="username">The username of this client</param>
+            <param name="ipAddress">The ip address of the server</param>
+            <param name="port">The port to connect to the server</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Client.Client.SendTCPData(UnityEngineNetwork.Packet)">
+            <summary>Sends a packet over tcp to the server</summary>
+            <param name="packet">The packet</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Client.Client.SendUDPData(UnityEngineNetwork.Packet)">
+            <summary>Sends a packet over udp to the server</summary>
+            <param name="packet">The packet</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Client.Client.AddPacketHandler(System.Int32,UnityEngineNetwork.Client.Client.PacketHandler)">
+            <summary>Adds a packethandler to the list of packethandlers</summary>
+            <param name="id">The id of the packethandler which has to be greater than 0, because the first packet handler is the welcome message packet handler</param>
+            <param name="handler">The packet handler</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Client.Client.Disconnect">
+            <summary>Disconnects from the server</summary>
+        </member>
         <member name="M:UnityEngineNetwork.Client.Client.ExecuteOnMainThread(System.Action)">
             <summary>Sets an action to be executed on the main thread.</summary>
             <param name="action">The action to be executed on the main thread.</param>
@@ -87,6 +158,47 @@
         <member name="E:UnityEngineNetwork.Client.IClient.OnConnect">
             <summary>Gets called when the client is connected to the server.</summary>
         </member>
+        <member name="T:UnityEngineNetwork.Client.TCP">
+            <summary>A class to handle all TCP requests.</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Client.TCP.Socket">
+            <summary>The tcp client</summary>
+        </member>
+        <member name="E:UnityEngineNetwork.Client.TCP.OnConnect">
+            <summary>Gets invoked when a connection to the server has been established.</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.Client.TCP.Connect">
+            <summary>Connects to the server.</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.Client.TCP.SendData(UnityEngineNetwork.Packet)">
+            <summary>Sends a packet to the server.</summary>
+            <param name="packet">The packet</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Client.TCP.Disconnect">
+            <summary>Disconnects from the server.</summary>
+        </member>
+        <member name="T:UnityEngineNetwork.Client.UDP">
+            <summary>Class to handle all UDP requests.</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.Client.UDP.#ctor(System.String,System.Int32)">
+            <summary>Creates a new UDP object and parses the given ip address and port</summary>
+            <param name="ipAddress">The ip address</param>
+            <param name="port">The port</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Client.UDP.Connect(System.Int32)">
+            <summary>Connects to the server through a certain port.</summary>
+            <param name="localPort">The local port</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Client.UDP.SendData(UnityEngineNetwork.Packet)">
+            <summary>Sends the given packet to the server.</summary>
+            <param name="packet">The packet</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Client.UDP.Disconnect">
+            <summary>Disconnects from the server.</summary>
+        </member>
+        <member name="T:UnityEngineNetwork.Constants">
+            <summary>Contains various constants</summary>
+        </member>
         <member name="F:UnityEngineNetwork.Constants.DataBufferSize">
             <summary>The DataBufferSize.</summary>
         </member>
@@ -95,6 +207,89 @@
         </member>
         <member name="F:UnityEngineNetwork.Constants.LocalHost">
             <summary>The localhost ip address</summary>
+        </member>
+        <member name="T:UnityEngineNetwork.Protocol">
+            <summary>Includes protocols</summary>
+        </member>
+        <member name="F:UnityEngineNetwork.Protocol.TCP">
+            <summary>Transmission Control Protocol</summary>
+        </member>
+        <member name="F:UnityEngineNetwork.Protocol.UDP">
+            <summary>User Datagram Protocol</summary>
+        </member>
+        <member name="T:UnityEngineNetwork.OnWelcomeReceivedEventHandler">
+            <summary>Event handler for the welcome message</summary>
+            <param name="sender">The sender</param>
+            <param name="e">The welcome event args</param>
+        </member>
+        <member name="T:UnityEngineNetwork.OnClientConnectedEventHandler">
+            <summary>Event handler for the client connected event</summary>
+            <param name="sender">The sender</param>
+            <param name="e">The event args</param>
+        </member>
+        <member name="T:UnityEngineNetwork.OnClientDisconnectedEventHandler">
+            <summary>Event handler for the client diconect event.</summary>
+            <param name="sender">The sender</param>
+            <param name="e">The event args</param>
+        </member>
+        <member name="T:UnityEngineNetwork.OnDisconnectEventHandler">
+            <summary>Event handler for the diconnected event</summary>
+            <param name="sender">The sender</param>
+            <param name="e">The event args</param>
+        </member>
+        <member name="T:UnityEngineNetwork.OnConnectEventHandler">
+            <summary>Event handler for the connected event</summary>
+            <param name="sender">The sender</param>
+            <param name="e">The event args</param>
+        </member>
+        <member name="T:UnityEngineNetwork.OnServerStartedEventHandler">
+            <summary>Event handler for the server started event</summary>
+            <param name="sender">The sender</param>
+            <param name="e">The event args</param>
+        </member>
+        <member name="T:UnityEngineNetwork.OnServerStoppedEventHandler">
+            <summary>Event handler for the server stopped event</summary>
+            <param name="sender">The sender</param>
+            <param name="e">The event args</param>
+        </member>
+        <member name="T:UnityEngineNetwork.ClientEventArgs">
+            <summary>Eventargs for dealing with clients and its protocols.</summary>
+        </member>
+        <member name="F:UnityEngineNetwork.ClientEventArgs.Client">
+            <summary>The client</summary>
+        </member>
+        <member name="F:UnityEngineNetwork.ClientEventArgs.Protocol">
+            <summary>The protocol which was used</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.ClientEventArgs.#ctor(UnityEngineNetwork.Server.Client,UnityEngineNetwork.Protocol)">
+            <summary>Create eventargs with a client and its protocol</summary>
+            <param name="client"></param>
+            <param name="protocol"></param>
+        </member>
+        <member name="T:UnityEngineNetwork.WelcomeEventArgs">
+            <summary>EventArgs for the first message.</summary>
+        </member>
+        <member name="F:UnityEngineNetwork.WelcomeEventArgs.Message">
+            <summary>The welcome message</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.WelcomeEventArgs.#ctor(System.String)">
+            <summary>Create EventArgs for the first message.</summary>
+            <param name="message">The welcome message.</param>
+        </member>
+        <member name="T:UnityEngineNetwork.ConnectionFailedException">
+            <summary>Thrwo when a connection couldn't be established.</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.ConnectionFailedException.#ctor(System.String)">
+            <summary>Attach a message to the exception.</summary>
+            <param name="message">The message</param>
+        </member>
+        <member name="M:UnityEngineNetwork.ConnectionFailedException.#ctor(System.String,System.Exception)">
+            <summary>Attach a message and the inner exception.</summary>
+            <param name="message">The message</param>
+            <param name="inner">The inner exception</param>
+        </member>
+        <member name="T:UnityEngineNetwork.Packet">
+            <summary>Represents a packet/data</summary>
         </member>
         <member name="M:UnityEngineNetwork.Packet.#ctor">
             <summary>Creates a new empty packet (without an ID).</summary>
@@ -212,11 +407,83 @@
             <summary>Reads a quaternion from the packet.</summary>
             <param name="moveReadPos">Whether or not to move the buffer's read position.</param>
         </member>
+        <member name="M:UnityEngineNetwork.Packet.Dispose">
+            <summary>Disposes this packet</summary>
+        </member>
+        <member name="T:UnityEngineNetwork.Server.BaseClientRepository">
+            <summary>Controlls all requests from and to the client</summary>
+        </member>
+        <member name="E:UnityEngineNetwork.Server.BaseClientRepository.OnWelcomeReceived">
+            <summary>Gets invoked when the welcome message was received</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.BaseClientRepository.SendTCPDataToClient(System.Int32,UnityEngineNetwork.Packet)">
+            <summary>Sends a packet to the client via tcp</summary>
+            <param name="clientId">The client id to send to</param>
+            <param name="packet">The packet to send</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.BaseClientRepository.SendTCPDataToAllClients(UnityEngineNetwork.Packet)">
+            <summary>Sends a packet to all clients via tcp</summary>
+            <param name="packet">The packet to send</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.BaseClientRepository.SendTCPDataToAllClients(UnityEngineNetwork.Packet,System.Int32[])">
+            <summary>Sends a packet to all clients with some exceptions via tcp</summary>
+            <param name="packet">The packet to send</param>
+            <param name="blockList">The array of client ids which will not receive the packet</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.BaseClientRepository.SendUDPDataToClient(System.Int32,UnityEngineNetwork.Packet)">
+            <summary>Sends udp data to a client</summary>
+            <param name="clientId">The client id to send to</param>
+            <param name="packet">The packet to send</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.BaseClientRepository.SendUDPDataToAllClients(UnityEngineNetwork.Packet)">
+            <summary>Sends a packet to all clients via udo</summary>
+            <param name="packet"></param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.BaseClientRepository.SendUDPDataToAllClients(UnityEngineNetwork.Packet,System.Int32[])">
+            <summary>Sends a packet to all cliets with some exceptions</summary>
+            <param name="packet">The packet to send</param>
+            <param name="blockList">The array of client ids which will not receive the packet</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.BaseClientRepository.SendWelcome(System.Int32,System.String)">
+            <summary>Sends a welcome message</summary>
+            <param name="receiverClientId">The receiver client id</param>
+            <param name="message">The message to send</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.BaseClientRepository.HandleWelcomeReceived(System.Int32,UnityEngineNetwork.Packet)">
+            <summary>Handles the welcome message which was sent back</summary>
+            <param name="clientId">The client id, which sent the welcome message</param>
+            <param name="packet">The packet</param>
+        </member>
+        <member name="T:UnityEngineNetwork.Server.BaseServerNetworkManager">
+            <summary>Manages the server</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.BaseServerNetworkManager.#ctor">
+            <summary>Creates a new server network manager</summary>
+        </member>
         <member name="P:UnityEngineNetwork.Server.BaseServerNetworkManager.ServerInstance">
             <summary>The server singleton</summary>
         </member>
-        <member name="M:UnityEngineNetwork.Server.BaseServerNetworkManager.InitPacketHandlers">
-            <summary>Initilizes all packet handlers.</summary>
+        <member name="T:UnityEngineNetwork.Server.Client">
+            <summary>Represents a client</summary>
+        </member>
+        <member name="F:UnityEngineNetwork.Server.Client.Id">
+            <summary>The client id</summary>
+        </member>
+        <member name="F:UnityEngineNetwork.Server.Client.Username">
+            <summary>The username of the client</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Server.Client.IsConnected">
+            <summary>Indictes whether the client is connected to the server</summary>
+        </member>
+        <member name="E:UnityEngineNetwork.Server.Client.OnClientDisconnected">
+            <summary>Gets invoked when a client disconnects</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.Client.#ctor(System.Int32)">
+            <summary>Creates a new client with its clientid</summary>
+            <param name="clientId"></param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.Client.Disconnect">
+            <summary>Disconnects the client from the server</summary>
         </member>
         <member name="T:UnityEngineNetwork.Server.IServer">
             <summary>The interface for the server singleton. You should never access it directly</summary>
@@ -282,12 +549,133 @@
         <member name="E:UnityEngineNetwork.Server.IServer.OnServerStopped">
             <summary>Gets called when the server stops.</summary>
         </member>
+        <member name="T:UnityEngineNetwork.Server.Server">
+            <summary>The server which handles all connected clients.</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Server.Server.Instance">
+            <summary>The singleton instance</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Server.Server.ClientRepository">
+            <summary>The repository for all client requests</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Server.Server.Clients">
+            <summary>All clients with their unique ID</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Server.Server.MaxClients">
+            <summary>Max number of clients that are able to connect</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Server.Server.Port">
+            <summary>The port which clients can connect to</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Server.Server.PacketHandlers">
+            <summary>Dictionary of all packet handlers</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Server.Server.UdpListener">
+            <summary>The udp listener</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Server.Server.IsRunning">
+            <summary>Indicates whther the server is running</summary>
+        </member>
+        <member name="T:UnityEngineNetwork.Server.Server.PacketHandler">
+            <summary>Delegate for a packet handler</summary>
+            <param name="clientId">The client id</param>
+            <param name="packet">The packet</param>
+        </member>
+        <member name="E:UnityEngineNetwork.Server.Server.OnClientConnected">
+            <summary>Gets invoked when a client connects.</summary>
+        </member>
+        <member name="E:UnityEngineNetwork.Server.Server.OnClientDisconnected">
+            <summary>Gets invoked when a client diconnects.</summary>
+        </member>
+        <member name="E:UnityEngineNetwork.Server.Server.OnServerStarted">
+            <summary>Gets invoked when the server starts.</summary>
+        </member>
+        <member name="E:UnityEngineNetwork.Server.Server.OnServerStopped">
+            <summary>Gets invoked when the server stopped.</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.Server.Start(UnityEngineNetwork.Server.BaseClientRepository,System.Int32,System.Int32)">
+            <summary>Starts the server</summary>
+            <param name="clientRepository">The client repository which handles the communication to and from the clients</param>
+            <param name="maxClients">The maximum amounts of connected clients</param>
+            <param name="port">The port</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.Server.Stop">
+            <summary>Stops the server</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.Server.AddPacketHandler(System.Int32,UnityEngineNetwork.Server.Server.PacketHandler)">
+            <summary>Adds a packet handler</summary>
+            <param name="id">The packet handler id</param>
+            <param name="handler">The packet handler</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.Server.GetRandomClientId(System.Boolean)">
+            <summary>Gets a random client id</summary>
+            <param name="hasToBeConnected">Indicates whether the pciked client has to be connected to the server</param>
+            <returns>the client id</returns>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.Server.FilterOutBlockedStrings(System.String,System.Char)">
+            <summary>Replaces all characters of the blocklist from the specified string</summary>
+            <param name="message">The string which will be cleaned</param>
+            <param name="replacementChar">The char which will replace the blocked words</param>
+            <returns></returns>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.Server.AddStringToBlock(System.String)">
+            <summary>Adds a string to the blocklist</summary>
+            <param name="stringToBlock">The string to block</param>
+        </member>
         <member name="M:UnityEngineNetwork.Server.Server.ExecuteOnMainThread(System.Action)">
             <summary>Sets an action to be executed on the main thread.</summary>
             <param name="action">The action to be executed on the main thread.</param>
         </member>
         <member name="M:UnityEngineNetwork.Server.Server.UpdateMain">
             <summary>Executes all code meant to run on the main thread. NOTE: Call this ONLY from the main thread.</summary>
+        </member>
+        <member name="T:UnityEngineNetwork.Server.TCP">
+            <summary>Class for all TCP requests</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Server.TCP.Socket">
+            <summary>The tcp client</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.TCP.#ctor(System.Int32)">
+            <summary>Creates a tcp class with a client id</summary>
+            <param name="clientId">The client id</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.TCP.Connect(System.Net.Sockets.TcpClient)">
+            <summary>Connects to the given client</summary>
+            <param name="socket">The client</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.TCP.SendData(UnityEngineNetwork.Packet)">
+            <summary>Sends a packet to the client </summary>
+            <param name="packet"></param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.TCP.Disconnect">
+            <summary>Disconnects from the client.</summary>
+        </member>
+        <member name="T:UnityEngineNetwork.Server.UDP">
+            <summary>Class to handle all UDP requests.</summary>
+        </member>
+        <member name="P:UnityEngineNetwork.Server.UDP.EndPoint">
+            <summary>The IP endpoint of the client.</summary>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.UDP.#ctor(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.UDP.Connect(System.Net.IPEndPoint)">
+            <summary>Connects to the Client.</summary>
+            <param name="endPoint">The endpoint to connect to</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.UDP.SendData(UnityEngineNetwork.Packet)">
+            <summary>Sends a packet to the client.</summary>
+            <param name="packet">The packet to send.</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.UDP.HandleData(UnityEngineNetwork.Packet)">
+            <summary>Handles a received packet.</summary>
+            <param name="data">The packet</param>
+        </member>
+        <member name="M:UnityEngineNetwork.Server.UDP.Disconnect">
+            <summary>Disconnects from the Client.</summary>
         </member>
     </members>
 </doc>

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace UnityEngineNetwork {
+﻿namespace UnityEngineNetwork {
+  /// <summary>Contains various constants</summary>
   public sealed class Constants {
     /// <summary>The DataBufferSize.</summary>
     public const int DataBufferSize = 4096;
@@ -14,8 +11,11 @@ namespace UnityEngineNetwork {
     public const string LocalHost = "127.0.0.1";
   }
 
+  /// <summary>Includes protocols</summary>
   public enum Protocol {
+    /// <summary>Transmission Control Protocol</summary>
     TCP,
+    /// <summary>User Datagram Protocol</summary>
     UDP
   }
 }

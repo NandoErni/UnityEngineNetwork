@@ -3,8 +3,10 @@ using System.Net.Sockets;
 
 namespace UnityEngineNetwork.Server {
 
+  /// <summary>Class for all TCP requests</summary>
   public class TCP {
-    public TcpClient Socket;
+    /// <summary>The tcp client</summary>
+    public TcpClient Socket { get; private set; }
 
     private NetworkStream _networkStream;
 
@@ -12,12 +14,16 @@ namespace UnityEngineNetwork.Server {
 
     private byte[] _receiveBuffer;
 
-    private readonly int _id;
+    private readonly int _clientId;
 
-    public TCP(int id) {
-      _id = id;
+    /// <summary>Creates a tcp class with a client id</summary>
+    /// <param name="clientId">The client id</param>
+    public TCP(int clientId) {
+      _clientId = clientId;
     }
 
+    /// <summary>Connects to the given client</summary>
+    /// <param name="socket">The client</param>
     public void Connect(TcpClient socket) {
       Socket = socket;
       Socket.ReceiveBufferSize = Constants.DataBufferSize;
@@ -30,9 +36,11 @@ namespace UnityEngineNetwork.Server {
 
       _networkStream.BeginRead(_receiveBuffer, 0, Constants.DataBufferSize, ReceiveCallback, null);
 
-      Server.Instance.ClientRepository.SendWelcome(_id, "Welcome to the Server");
+      Server.Instance.ClientRepository.SendWelcome(_clientId, "Welcome to the Server");
     }
 
+    /// <summary>Sends a packet to the client </summary>
+    /// <param name="packet"></param>
     public void SendData(Packet packet) {
       if (Socket != null) {
         _networkStream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null);
@@ -43,7 +51,7 @@ namespace UnityEngineNetwork.Server {
       try {
         int byteLength = _networkStream.EndRead(result);
         if (byteLength <= 0) {
-          Server.Instance.Clients[_id].Disconnect();
+          Server.Instance.Clients[_clientId].Disconnect();
           return;
         }
 
@@ -55,7 +63,7 @@ namespace UnityEngineNetwork.Server {
         _networkStream.BeginRead(_receiveBuffer, 0, Constants.DataBufferSize, ReceiveCallback, null);
       }
       catch (Exception ex) {
-        Server.Instance.Clients[_id].Disconnect();
+        Server.Instance.Clients[_clientId].Disconnect();
         throw ex;
       }
     }
@@ -77,7 +85,7 @@ namespace UnityEngineNetwork.Server {
         Server.Instance.ExecuteOnMainThread(() => {
           using (Packet packet = new Packet(packetBytes)) {
             int packetId = packet.ReadInt();
-            Server.Instance.PacketHandlers[packetId](_id, packet);
+            Server.Instance.PacketHandlers[packetId](_clientId, packet);
           }
         });
 
@@ -97,6 +105,7 @@ namespace UnityEngineNetwork.Server {
       return false;
     }
 
+    /// <summary>Disconnects from the client.</summary>
     public void Disconnect() {
       Socket.Close();
       _networkStream = null;

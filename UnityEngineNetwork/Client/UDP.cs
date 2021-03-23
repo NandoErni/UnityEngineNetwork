@@ -3,37 +3,47 @@ using System.Net;
 using System.Net.Sockets;
 
 namespace UnityEngineNetwork.Client {
-  public class UDP {
-    public UdpClient Socket;
-    public IPEndPoint EndPoint;
 
-    public UDP() {
-      EndPoint = new IPEndPoint(IPAddress.Parse(Client.Instance.ServerIpAddress), Client.Instance.Port);
+  /// <summary>Class to handle all UDP requests.</summary>
+  public class UDP {
+    private IPEndPoint _endPoint;
+
+    private UdpClient _socket;
+
+    /// <summary>Creates a new UDP object and parses the given ip address and port</summary>
+    /// <param name="ipAddress">The ip address</param>
+    /// <param name="port">The port</param>
+    public UDP(string ipAddress, int port) {
+      _endPoint = new IPEndPoint(IPAddress.Parse(ipAddress), port);
     }
 
+    /// <summary>Connects to the server through a certain port.</summary>
+    /// <param name="localPort">The local port</param>
     public void Connect(int localPort) {
-      Socket = new UdpClient(localPort);
+      _socket = new UdpClient(localPort);
 
-      Socket.Connect(EndPoint);
-      Socket.BeginReceive(ReceiveCallback, null);
+      _socket.Connect(_endPoint);
+      _socket.BeginReceive(ReceiveCallback, null);
 
       using (Packet packet = new Packet()) {
         SendData(packet);
       }
     }
 
+    /// <summary>Sends the given packet to the server.</summary>
+    /// <param name="packet">The packet</param>
     public void SendData(Packet packet) {
       packet.InsertInt(Client.Instance.Id);
 
-      if (Socket != null) {
-        Socket.BeginSend(packet.ToArray(), packet.Length(), null, null);
+      if (_socket != null) {
+        _socket.BeginSend(packet.ToArray(), packet.Length(), null, null);
       }
     }
 
     private void ReceiveCallback(IAsyncResult result) {
       try {
-        byte[] data = Socket.EndReceive(result, ref EndPoint);
-        Socket.BeginReceive(ReceiveCallback, null);
+        byte[] data = _socket.EndReceive(result, ref _endPoint);
+        _socket.BeginReceive(ReceiveCallback, null);
 
         if (data.Length < 4) {
           Client.Instance.Disconnect();
@@ -60,12 +70,13 @@ namespace UnityEngineNetwork.Client {
       });
     }
 
+    /// <summary>Disconnects from the server.</summary>
     public void Disconnect() {
-      if (Socket != null) {
-        Socket.Close();
+      if (_socket != null) {
+        _socket.Close();
       }
-      EndPoint = null;
-      Socket = null;
+      _endPoint = null;
+      _socket = null;
     }
   }
 }
