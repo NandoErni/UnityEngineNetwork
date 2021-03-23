@@ -8,6 +8,6 @@
     }
 
     /// <summary>The server singleton</summary>
-    protected IServer ServerInstance => Server.Instance;
+    public IServer ServerInstance => Server.Instance;
   }
 }

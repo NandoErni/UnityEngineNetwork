@@ -5,6 +5,6 @@
     public BaseClientNetworkManager() : base() {
     }
     /// <summary>The client singleton</summary>
-    protected IClient ClientInstance => Client.Instance;
+    public IClient ClientInstance => Client.Instance;
   }
 }
