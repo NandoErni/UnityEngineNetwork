@@ -25,7 +25,7 @@
       Udp = new UDP(Id);
     }
 
-    /// <summary>Disconnects the client from the server</summary>
+    /// <inheritdoc/>
     public void Disconnect() {
       Tcp.Disconnect();
       Udp.Disconnect();

@@ -7,9 +7,6 @@
         <member name="T:UnityEngineNetwork.BaseNetworkManager">
             <summary>Represents a network manager</summary>
         </member>
-        <member name="M:UnityEngineNetwork.BaseNetworkManager.#ctor">
-            <summary>Creates a new network manager and initilizes the packet handlers</summary>
-        </member>
         <member name="M:UnityEngineNetwork.BaseNetworkManager.InitPacketHandlers">
             <summary>Initilizes all packet handlers.</summary>
         </member>

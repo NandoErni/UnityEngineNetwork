@@ -36,7 +36,7 @@ namespace UnityEngineNetwork.Server {
     /// <param name="id">The id of the packet handler. This id must match with the sender packet id of the clients.</param>
     /// <param name="handler">The handler method</param>
     /// <exception cref="ArgumentException">Is thrown when the id is below 1</exception>
-    void AddPacketHandler(int id, Server.PacketHandler handler);
+    void AddPacketHandler(int id, Server.PacketHandlerDelegate handler);
 
     /// <summary>Gets a random ClientId</summary>
     /// <param name="hasToBeConnected">Indicates whether the client has to be connected or not.</param>

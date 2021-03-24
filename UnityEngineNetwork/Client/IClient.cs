@@ -25,19 +25,19 @@ namespace UnityEngineNetwork.Client {
 
     #region Methods
     /// <summary>Connects to the specified Server.</summary>
+    /// <param name="repository">The repository to use for this client.</param>
     /// <param name="ipAddress">The IP address of the server.</param>
     /// <param name="port">The port of the server.</param>
     /// <param name="username">The username of this client</param>
-    /// <param name="serverRepository">The server repository</param>
     /// <exception cref="ConnectionFailedException">Gets called if the connection fails.</exception>
-    void ConnectToServer(BaseServerRepository serverRepository, string username, string ipAddress = Constants.LocalHost, int port = Constants.DefaultPort);
+    void ConnectToServer(BaseServerRepository repository, string username, string ipAddress = Constants.LocalHost, int port = Constants.DefaultPort);
 
     /// <summary>Adds a packet handler. The packet handler is used to handle incomming packets from the server. 
-    /// The id cannot be 0, because 0 is already used to send username and client id..</summary>
+    /// The id cannot be 0, because 0 is already used to send username and client id.</summary>
     /// <param name="id">The id of the packet handler. This id must match with the sender packet id of the server.</param>
     /// <param name="handler">The handler method</param>
     /// <exception cref="ArgumentException">Is thrown when the id is below 1</exception>
-    void AddPacketHandler(int id, Client.PacketHandler handler);
+    void AddPacketHandler(int id, Client.PacketHandlerDelegate handler);
 
     /// <summary>Disconnects all connections.</summary>
     void Disconnect();
