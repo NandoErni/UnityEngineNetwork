@@ -4,7 +4,7 @@ using System.Net.Sockets;
 namespace UnityEngineNetwork.Server {
 
   /// <summary>Class for all TCP requests</summary>
-  public class TCP {
+  internal class TCP {
     /// <summary>The tcp client</summary>
     public TcpClient Socket { get; private set; }
 

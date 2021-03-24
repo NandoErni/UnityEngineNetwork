@@ -5,7 +5,7 @@ using System.Net.Sockets;
 namespace UnityEngineNetwork.Client {
 
   /// <summary>Class to handle all UDP requests.</summary>
-  public class UDP {
+  internal class UDP {
     private IPEndPoint _endPoint;
 
     private UdpClient _socket;

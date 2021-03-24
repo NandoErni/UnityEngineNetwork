@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace UnityEngineNetwork.Client {
   /// <summary>A class to handle all TCP requests.</summary>
-  public class TCP {
+  internal class TCP {
     /// <summary>The tcp client</summary>
     public TcpClient Socket { get; private set; }
 

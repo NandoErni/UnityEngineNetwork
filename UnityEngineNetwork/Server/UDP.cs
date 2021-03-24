@@ -3,7 +3,7 @@
 namespace UnityEngineNetwork.Server {
 
   /// <summary>Class to handle all UDP requests.</summary>
-  public class UDP {
+  internal class UDP {
     /// <summary>The IP endpoint of the client.</summary>
     public IPEndPoint EndPoint { get; private set; }
 
