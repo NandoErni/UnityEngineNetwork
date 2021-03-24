@@ -8,4 +8,8 @@
     <DocumentationFile>C:\Users\nando\source\repos\UnityEngineNetwork\UnityEngineNetwork\UnityEngineNetwork.xml</DocumentationFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="bin\Release\netcoreapp3.1\UnityEngineNetwork.dll" />
+  </ItemGroup>
+
 </Project>
