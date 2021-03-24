@@ -4,12 +4,6 @@
         <name>UnityEngineNetwork</name>
     </assembly>
     <members>
-        <member name="T:UnityEngineNetwork.BaseNetworkManager">
-            <summary>Represents a network manager</summary>
-        </member>
-        <member name="M:UnityEngineNetwork.BaseNetworkManager.InitPacketHandlers">
-            <summary>Initilizes all packet handlers.</summary>
-        </member>
         <member name="T:UnityEngineNetwork.Client.BaseServerRepository">
             <summary>Repository for all communication between client and server</summary>
         </member>
