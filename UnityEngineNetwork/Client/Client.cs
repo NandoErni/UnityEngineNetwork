@@ -30,7 +30,7 @@ namespace UnityEngineNetwork.Client {
     /// <inheritdoc/>
     public BaseServerRepository ServerRepository { get; private set; }
 
-    private ThreadManager _threadManager = new ThreadManager();
+    internal ThreadManager ThreadManager = new ThreadManager();
 
     private TCP _tcp;
 
@@ -131,7 +131,7 @@ namespace UnityEngineNetwork.Client {
 
     /// <inheritdoc/>
     public void UpdateMain() {
-      _threadManager.UpdateMain();
+      ThreadManager.UpdateMain();
     }
     #endregion
   }

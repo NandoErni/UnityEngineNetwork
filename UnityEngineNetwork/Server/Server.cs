@@ -38,7 +38,7 @@ namespace UnityEngineNetwork.Server {
 
     private List<string> _stringBlockList = new List<string>();
 
-    private ThreadManager _threadManager = new ThreadManager();
+    internal ThreadManager ThreadManager = new ThreadManager();
     #endregion
 
     #region Delegates
@@ -201,7 +201,7 @@ namespace UnityEngineNetwork.Server {
 
     /// <inheritdoc/>
     public void UpdateMain() {
-      _threadManager.UpdateMain();
+      ThreadManager.UpdateMain();
     }
     #endregion
   }

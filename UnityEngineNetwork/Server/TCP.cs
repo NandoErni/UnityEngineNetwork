@@ -82,10 +82,10 @@ namespace UnityEngineNetwork.Server {
 
       while (packetLength > 0 && packetLength <= _receivedData.UnreadLength()) {
         byte[] packetBytes = _receivedData.ReadBytes(packetLength);
-        Server.Instance.ExecuteOnMainThread(() => {
+        Server.Instance.ThreadManager.ExecuteOnMainThread(() => {
           using (Packet packet = new Packet(packetBytes)) {
             int packetId = packet.ReadInt();
-            Server.Instance.PacketHandlers[packetId](_clientId, packet);
+            Server.Instance.PacketHandler.Get(packetId)(_clientId, packet);
           }
         });
 

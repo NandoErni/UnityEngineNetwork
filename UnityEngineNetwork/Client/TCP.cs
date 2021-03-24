@@ -93,7 +93,7 @@ namespace UnityEngineNetwork.Client {
 
       while (packetLength > 0 && packetLength <= _receivedData.UnreadLength()) {
         byte[] packetBytes = _receivedData.ReadBytes(packetLength);
-        Client.Instance.ExecuteOnMainThread(() => {
+        Client.Instance.ThreadManager.ExecuteOnMainThread(() => {
           using (Packet packet = new Packet(packetBytes)) {
             Client.Instance.HandleReceivedPacket(packet);
           }

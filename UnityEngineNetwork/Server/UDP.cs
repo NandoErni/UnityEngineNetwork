@@ -37,10 +37,10 @@ namespace UnityEngineNetwork.Server {
       int packetLength = data.ReadInt();
       byte[] packetBytes = data.ReadBytes(packetLength);
 
-      Server.Instance.ExecuteOnMainThread(() => {
+      Server.Instance.ThreadManager.ExecuteOnMainThread(() => {
         using (Packet packet = new Packet(packetBytes)) {
           int packetId = packet.ReadInt();
-          Server.Instance.PacketHandlers[packetId](_id, packet);
+          Server.Instance.PacketHandler.Get(packetId)(_id, packet);
         }
       });
     }
