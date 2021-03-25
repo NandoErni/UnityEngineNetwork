@@ -14,11 +14,11 @@ namespace ConsoleExample {
     static void Main(string[] args) {
       InstantiateNetworkManager();
 
-      Task.Run(Update); // This is just for emulating unitys update method. You don't have to do it in unity.
+      Update(); // This is just for emulating unitys update method. You don't have to do it in unity.
 
       _server.SendSomeNums(); // This sends the sum number example from the server to the client.
 
-      Task.Run(SendClientRequestToServerAfter5Seconds); // This will send the Client request SendNumbers() to the server after 5 seconds. (ConsoleExample.Client.ServerRepository.SendNumbers())
+      SendClientRequestToServerAfter5Seconds(); // This will send the Client request SendNumbers() to the server after 5 seconds. (ConsoleExample.Client.ServerRepository.SendNumbers())
 
       NeverEnd(); // This prevents the method from returning
     }
@@ -43,7 +43,7 @@ namespace ConsoleExample {
     }
 
     static async void SendClientRequestToServerAfter5Seconds() {
-      await Task.Delay(1000 / FPS);
+      await Task.Delay(5000);
       _client.SendSomeNums();
     }
 
