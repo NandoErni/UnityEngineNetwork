@@ -83,7 +83,9 @@ namespace UnityEngineNetwork.Server {
       MaxClients = maxClients;
       Port = port;
 
-      PacketHandler.AddPacketHandler(0, clientRepository.HandleWelcomeReceived);
+      if (PacketHandler.Get(0) == null) {
+        PacketHandler.AddPacketHandler(0, clientRepository.HandleWelcomeReceived);
+      }
       InitServerData();
 
       _tcpListener = new TcpListener(IPAddress.Any, Port);

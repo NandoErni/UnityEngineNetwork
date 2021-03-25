@@ -78,7 +78,9 @@ namespace UnityEngineNetwork.Client {
       }
 
       ServerRepository = repository;
-      AddPacketHandler(0, ServerRepository.HandleWelcome);
+      if (_packetHandler.Get(0) == null) {
+        AddPacketHandler(0, ServerRepository.HandleWelcome);
+      }
       ServerIpAddress = ipAddress;
       Port = port;
       Username = username;
