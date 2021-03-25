@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace UnityEngineNetwork {
   internal class PacketHandler<T> {
@@ -20,7 +21,8 @@ namespace UnityEngineNetwork {
     }
 
     internal T Get(int key) {
-      return _packetHandlers.GetValueOrDefault(key);
+      _packetHandlers.TryGetValue(key, out T value);
+      return value;
     }
 
     internal void Flush() {

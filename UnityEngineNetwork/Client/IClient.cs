@@ -51,7 +51,7 @@ namespace UnityEngineNetwork.Client {
     event OnDisconnectEventHandler OnDisconnect;
 
     /// <summary>Gets called when the client is connected to the server.</summary>
-    public event OnConnectEventHandler OnConnect;
+    event OnConnectEventHandler OnConnect;
     #endregion
   }
 }
