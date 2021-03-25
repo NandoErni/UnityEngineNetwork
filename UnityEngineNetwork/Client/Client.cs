@@ -58,9 +58,7 @@ namespace UnityEngineNetwork.Client {
 
     #region Methods
     /// <inheritdoc/>
-    public void ReconnectToServer() {
-      AddPacketHandler(0, ServerRepository.HandleWelcome);
-      
+    public void ReconnectToServer() {      
       _tcp.Connect();
     }
 
@@ -79,6 +77,7 @@ namespace UnityEngineNetwork.Client {
         throw new ArgumentException("The repository must not be null");
       }
 
+      ServerRepository = repository;
       AddPacketHandler(0, ServerRepository.HandleWelcome);
       ServerIpAddress = ipAddress;
       Port = port;
@@ -118,7 +117,6 @@ namespace UnityEngineNetwork.Client {
         IsConnected = false;
         _tcp.Disconnect();
         _udp.Disconnect();
-        _packetHandler.Flush();
 
         OnDisconnect?.Invoke(this, new EventArgs());
       }

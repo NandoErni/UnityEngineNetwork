@@ -69,7 +69,7 @@ namespace UnityEngineNetwork.Server {
 
     #region Init
     private void InitServerData() {
-      for (int i = 1; i <= MaxClients; i++) {
+      for (int i = 0; i < MaxClients; i++) {
         Clients.Add(i, new Client(i));
         Clients[i].OnClientDisconnected += (sender, e) => { OnClientDisconnected?.Invoke(this, e); };
       }
@@ -157,7 +157,7 @@ namespace UnityEngineNetwork.Server {
       TcpClient client = _tcpListener.EndAcceptTcpClient(result);
       _tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
 
-      for (int i = 1; i <= MaxClients; i++) {
+      for (int i = 0; i < MaxClients; i++) {
         if (Clients[i].Tcp.Socket == null) {
           Clients[i].Tcp.Connect(client);
           OnClientConnected?.Invoke(this, new ClientEventArgs(Clients[i], Protocol.TCP));
