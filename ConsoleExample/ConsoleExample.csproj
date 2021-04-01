@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="bin\Release\netcoreapp3.1\UnityEngineNetwork.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\UnityEngineNetwork\UnityEngineNetwork.csproj" />
   </ItemGroup>
 

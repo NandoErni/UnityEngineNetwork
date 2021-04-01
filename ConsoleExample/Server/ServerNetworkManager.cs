@@ -7,7 +7,7 @@ namespace ConsoleExample.Server {
     private ClientRepository _repository => (ClientRepository)_instance.ClientRepository;
 
     public ServerNetworkManager(ClientRepository repository) {
-      _instance.Start(repository, 4);
+      _instance.Start(repository, 4, 9999);
       _instance.AddPacketHandler((int)RequestId.SumNum, repository.HandleNumbers);
     }
 

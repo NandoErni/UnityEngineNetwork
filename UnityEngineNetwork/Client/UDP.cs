@@ -64,7 +64,6 @@ namespace UnityEngineNetwork.Client {
 
       Client.Instance.ThreadManager.ExecuteOnMainThread(() => {
         using (Packet packet = new Packet(data)) {
-          int packetId = packet.ReadInt();
           Client.Instance.HandleReceivedPacket(packet);
         }
       });

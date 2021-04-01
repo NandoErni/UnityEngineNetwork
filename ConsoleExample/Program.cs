@@ -11,8 +11,8 @@ namespace ConsoleExample {
 
     private static ClientNetworkManager _client;
 
-    static void Main(string[] args) {
-      InstantiateNetworkManager();
+    static async Task Main(string[] args) {
+      await InstantiateNetworkManager();
 
       Update(); // This is just for emulating unitys update method. You don't have to do it in unity.
 
@@ -27,9 +27,10 @@ namespace ConsoleExample {
     /// In the Constructor of the client network manager we connect to the server and add the sumNumHandler to the PackageHandlers.
     /// In the constructor of the server network manager we start the server and also add the sumNumHandler to the PackageHandlers.
     /// It's important that we first start the server before trying to connect to it!</summary>
-    static void InstantiateNetworkManager() {
+    static async Task InstantiateNetworkManager() {
       _server = new ServerNetworkManager(new ClientRepository());
       _client = new ClientNetworkManager(new ServerRepository());
+      await Task.Delay(10); // Delay, because the client and server need some time to set up
     }
 
     /// <summary>Represents Unitys Update method</summary>

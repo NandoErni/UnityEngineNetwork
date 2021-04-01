@@ -9,9 +9,7 @@ namespace UnityEngineNetwork.Server {
 
     private int _id;
 
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <summary>UDP</summary>
     /// <param name="id"></param>
     public UDP(int id) {
       _id = id;
@@ -39,8 +37,7 @@ namespace UnityEngineNetwork.Server {
 
       Server.Instance.ThreadManager.ExecuteOnMainThread(() => {
         using (Packet packet = new Packet(packetBytes)) {
-          int packetId = packet.ReadInt();
-          Server.Instance.PacketHandler.Get(packetId)(_id, packet);
+          Server.Instance.HandleReceivedPacket(_id, packet);
         }
       });
     }

@@ -29,7 +29,7 @@ namespace UnityEngineNetwork.Server {
 
     private TcpListener _tcpListener;
 
-    internal PacketHandler<PacketHandlerDelegate> PacketHandler = new PacketHandler<PacketHandlerDelegate>();
+    private PacketHandler<PacketHandlerDelegate> _packetHandler = new PacketHandler<PacketHandlerDelegate>();
 
     internal UdpClient UdpListener { get; private set; }
 
@@ -69,7 +69,7 @@ namespace UnityEngineNetwork.Server {
 
     #region Init
     private void InitServerData() {
-      for (int i = 0; i < MaxClients; i++) {
+      for (int i = 1; i <= MaxClients; i++) {
         Clients.Add(i, new Client(i));
         Clients[i].OnClientDisconnected += (sender, e) => { OnClientDisconnected?.Invoke(this, e); };
       }
@@ -83,8 +83,8 @@ namespace UnityEngineNetwork.Server {
       MaxClients = maxClients;
       Port = port;
 
-      if (PacketHandler.Get(0) == null) {
-        PacketHandler.AddPacketHandler(0, clientRepository.HandleWelcomeReceived);
+      if (_packetHandler.Get(0) == null) {
+        _packetHandler.AddPacketHandler(0, clientRepository.HandleWelcomeReceived);
       }
       InitServerData();
 
@@ -111,7 +111,11 @@ namespace UnityEngineNetwork.Server {
 
     /// <inheritdoc/>
     public void AddPacketHandler(int id, PacketHandlerDelegate handler) {
-      PacketHandler.AddPacketHandler(id, handler);
+      _packetHandler.AddPacketHandler(id, handler);
+    }
+
+    internal void HandleReceivedPacket(int id, Packet packet) {
+      _packetHandler.Get(packet.ReadInt())(id, packet);
     }
 
     /// <inheritdoc/>
@@ -159,7 +163,7 @@ namespace UnityEngineNetwork.Server {
       TcpClient client = _tcpListener.EndAcceptTcpClient(result);
       _tcpListener.BeginAcceptTcpClient(new AsyncCallback(TCPConnectCallback), null);
 
-      for (int i = 0; i < MaxClients; i++) {
+      for (int i = 1; i <= MaxClients; i++) {
         if (Clients[i].Tcp.Socket == null) {
           Clients[i].Tcp.Connect(client);
           OnClientConnected?.Invoke(this, new ClientEventArgs(Clients[i], Protocol.TCP));

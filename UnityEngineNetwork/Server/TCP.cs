@@ -84,8 +84,7 @@ namespace UnityEngineNetwork.Server {
         byte[] packetBytes = _receivedData.ReadBytes(packetLength);
         Server.Instance.ThreadManager.ExecuteOnMainThread(() => {
           using (Packet packet = new Packet(packetBytes)) {
-            int packetId = packet.ReadInt();
-            Server.Instance.PacketHandler.Get(packetId)(_clientId, packet);
+            Server.Instance.HandleReceivedPacket(_clientId, packet);
           }
         });
 

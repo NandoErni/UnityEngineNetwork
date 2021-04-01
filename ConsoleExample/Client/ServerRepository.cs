@@ -10,7 +10,7 @@ namespace ConsoleExample.Client {
         packet.Write(3);
         packet.Write(5);
 
-        SendTCPData(packet);
+        SendUDPData(packet);
       }
     }
 
