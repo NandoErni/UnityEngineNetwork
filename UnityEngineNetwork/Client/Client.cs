@@ -4,12 +4,6 @@ using System.Net;
 namespace UnityEngineNetwork.Client {
   /// <inheritdoc/>
   public sealed class Client : IClient {
-    #region Static
-    /// <summary>The singleton instance</summary>
-    public static Client Instance => _instance;
-
-    private static readonly Client _instance = new Client();
-    #endregion
 
     #region Variables & Properties
     /// <inheritdoc/>
@@ -19,18 +13,15 @@ namespace UnityEngineNetwork.Client {
     public string ServerIpAddress { get; private set; }
 
     /// <inheritdoc/>
-    public int Port { get; private set; }
+    public int ServerPort { get; private set; }
 
     /// <inheritdoc/>
     public string Username { get; private set; }
 
     /// <inheritdoc/>
-    public bool IsConnected { get; set; } = false;
+    public bool IsConnected { get; private set; } = false;
 
-    /// <inheritdoc/>
-    public BaseServerRepository ServerRepository { get; private set; }
-
-    internal ThreadManager ThreadManager = new ThreadManager();
+    private ThreadManager _threadManager = new ThreadManager();
 
     private TCP _tcp;
 
@@ -47,70 +38,85 @@ namespace UnityEngineNetwork.Client {
     public event OnDisconnectEventHandler OnDisconnect;
 
     /// <inheritdoc/>
-    public event OnConnectEventHandler OnConnect;
+    public event OnWelcomeReceivedEventHandler OnWelcomeReceived;
     #endregion
 
     #region Constructor
-    static Client() { }
-
-    private Client() { }
-    #endregion
-
-    #region Methods
-    /// <inheritdoc/>
-    public void ReconnectToServer() {      
-      _tcp.Connect();
-    }
-
-    /// <inheritdoc/>
-    public void ConnectToServer(BaseServerRepository repository, string username, string ipAddress = Constants.LocalHost, int port = Constants.DefaultPort) {
-      if (String.IsNullOrEmpty(username.Trim())) {
+    /// <summary>Creates a client. The client is not connected yet.</summary>
+    /// <param name="ipAddress">The IP address of the server.</param>
+    /// <param name="port">The port of the server.</param>
+    /// <param name="username">The username of this client</param>
+    public Client(string username, string ipAddress = Constants.LocalHost, int port = Constants.DefaultPort) {
+      if (string.IsNullOrEmpty(username.Trim())) {
         throw new ArgumentException($"The username '{username}' is not valid");
       }
-      if (String.IsNullOrEmpty(ipAddress.Trim())) {
+      if (string.IsNullOrEmpty(ipAddress.Trim())) {
         throw new ArgumentException($"The ip address '{ipAddress}' is not valid");
       }
       if (port <= 0) {
         throw new ArgumentException($"The port '{port}' is not valid");
       }
-      if (repository == null) {
-        throw new ArgumentException("The repository must not be null");
-      }
 
-      ServerRepository = repository;
-      if (_packetHandler.Get(0) == null) {
-        AddPacketHandler(0, ServerRepository.HandleWelcome);
-      }
+      _packetHandler.TryAddPackerHandler(0, HandleWelcome);
+
       ServerIpAddress = ipAddress;
-      Port = port;
+      ServerPort = port;
       Username = username;
-      _tcp = new TCP();
-      _udp = new UDP(ServerIpAddress, Port);
-      _tcp.OnConnect += (sender, e) => { OnConnect?.Invoke(this, e); };
-      ReconnectToServer();
+
+      DataHandler _dataHandler = new DataHandler(HandleReceivedPacket);
+
+      _tcp = new TCP(ServerIpAddress, ServerPort, _dataHandler);
+      _tcp.OnConnect += (s, e) => IsConnected = true;
+      _tcp.OnDisconnect += (s, e) => Disconnect();
+
+      _udp = new UDP(ServerIpAddress, ServerPort, _dataHandler);
+      _udp.OnDisconnect += (s, e) => Disconnect();
+    }
+    #endregion
+
+    #region Methods
+    /// <inheritdoc/>
+    public void ConnectToServer() {
+      _tcp.Connect();
     }
 
-    internal void ConnectToUdp() {
-      _udp.Connect(((IPEndPoint)_tcp?.Socket?.Client.LocalEndPoint).Port);
-    }
-
-    internal void InitId(int id) {
-      Id = id;
+    private void ConnectToUdp(int clientId) {
+      Id = clientId;
+      _udp.Connect(((IPEndPoint)_tcp?.Socket?.Client.LocalEndPoint).Port, Id);
     }
 
     /// <inheritdoc/>
-    internal void SendTCPData(Packet packet) {
+    public void SendTCPData(Packet packet) {
+      if (!IsConnected) {
+        throw new ConnectionFailedException("The client is not connected to the server!");
+      }
+      packet.WriteLength();
       _tcp.SendData(packet);
     }
 
-
     /// <inheritdoc/>
-    internal void SendUDPData(Packet packet) {
+    public void SendUDPData(Packet packet) {
+      if (!IsConnected) {
+        throw new ConnectionFailedException("The client is not connected to the server!");
+      }
+      packet.WriteLength();
       _udp.SendData(packet);
     }
 
-    internal void HandleReceivedPacket(Packet packet) {
-      _packetHandler.Get(packet.ReadInt())(packet);
+    private void HandleReceivedPacket(byte[] data) {
+      _threadManager.ExecuteOnMainThread(() => {
+        using (Packet packet = new Packet(data)) {
+          if (packet == null) {
+            return;
+          }
+
+          PacketHandlerDelegate handler = _packetHandler.Get(packet.ReadInt());
+
+          if (handler != null) {
+            handler(packet);
+          }
+        }
+      });
     }
 
     /// <inheritdoc/>
@@ -131,7 +137,28 @@ namespace UnityEngineNetwork.Client {
 
     /// <inheritdoc/>
     public void UpdateMain() {
-      ThreadManager.UpdateMain();
+      _threadManager.UpdateMain();
+    }
+
+    /// <summary>Handles the welcome message from the server.</summary>
+    /// <param name="packet">the packet</param>
+    private void HandleWelcome(Packet packet) {
+      string message = packet.ReadString();
+      int id = packet.ReadInt();
+
+      ConnectToUdp(id);
+      OnWelcomeReceived?.Invoke(this, new WelcomeEventArgs(message, id));
+      SendWelcomeReceived();
+    }
+
+    /// <summary>Sends a packet to the server containing the username.</summary>
+    private void SendWelcomeReceived() {
+      using (Packet packet = new Packet(0)) {
+        packet.Write(Id);
+        packet.Write(Username);
+
+        SendTCPData(packet);
+      }
     }
     #endregion
   }

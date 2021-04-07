@@ -6,10 +6,13 @@ namespace UnityEngineNetwork {
     /// <summary>The welcome message</summary>
     public string Message;
 
+    public int ClientId;
+
     /// <summary>Create EventArgs for the first message.</summary>
     /// <param name="message">The welcome message.</param>
-    public WelcomeEventArgs(string message) {
+    public WelcomeEventArgs(string message, int clientId) {
       Message = message;
+      ClientId = clientId;
     }
   }
 }

@@ -4,9 +4,6 @@ namespace UnityEngineNetwork.Client {
   /// <summary>The interface for the client singleton. You should never access it directly.</summary>
   public interface IClient {
     #region Properties
-    /// <summary>Repository for all communication between client and server</summary>
-    BaseServerRepository ServerRepository { get; }
-
     /// <summary>The Player id. can be used to determine which player number the current client is.</summary>
     int Id { get; }
 
@@ -14,7 +11,7 @@ namespace UnityEngineNetwork.Client {
     string ServerIpAddress { get; }
 
     /// <summary>The server port</summary>
-    int Port { get; }
+    int ServerPort { get; }
 
     /// <summary>The username</summary>
     string Username { get; }
@@ -24,13 +21,9 @@ namespace UnityEngineNetwork.Client {
     #endregion
 
     #region Methods
-    /// <summary>Connects to the specified Server.</summary>
-    /// <param name="repository">The repository to use for this client.</param>
-    /// <param name="ipAddress">The IP address of the server.</param>
-    /// <param name="port">The port of the server.</param>
-    /// <param name="username">The username of this client</param>
+    /// <summary>Connects to the Server.</summary>
     /// <exception cref="ConnectionFailedException">Gets called if the connection fails.</exception>
-    void ConnectToServer(BaseServerRepository repository, string username, string ipAddress = Constants.LocalHost, int port = Constants.DefaultPort);
+    void ConnectToServer();
 
     /// <summary>Adds a packet handler. The packet handler is used to handle incomming packets from the server. 
     /// The id cannot be 0, because 0 is already used to send username and client id.</summary>
@@ -42,6 +35,14 @@ namespace UnityEngineNetwork.Client {
     /// <summary>Disconnects all connections.</summary>
     void Disconnect();
 
+    /// <summary>Sends the packet to the server via TCP.</summary>
+    /// <param name="packet">the packet</param>
+    void SendTCPData(Packet packet);
+
+    /// <summary>Sends the packet to the server via UDP.</summary>
+    /// <param name="packet">The packet</param>
+    void SendUDPData(Packet packet);
+
     /// <summary>Call this method inside of Unitys Update() method.</summary>
     void UpdateMain();
     #endregion
@@ -50,8 +51,8 @@ namespace UnityEngineNetwork.Client {
     /// <summary>Gets called when the client disconnects all connections.</summary>
     event OnDisconnectEventHandler OnDisconnect;
 
-    /// <summary>Gets called when the client is connected to the server.</summary>
-    event OnConnectEventHandler OnConnect;
+    /// <summary>Gets called when the client receives the welcome message from the server.</summary>
+    event OnWelcomeReceivedEventHandler OnWelcomeReceived;
     #endregion
   }
 }

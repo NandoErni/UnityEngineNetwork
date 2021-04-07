@@ -13,8 +13,23 @@ namespace UnityEngineNetwork.Client {
 
     private byte[] _receiveBuffer;
 
+    private string _serverIpAddress;
+
+    private int _serverPort;
+
+    private DataHandler _dataHandler;
+
     /// <summary>Gets invoked when a connection to the server has been established.</summary>
     public event OnConnectEventHandler OnConnect;
+
+    /// <summary>Gets invoked when a connection to the server has been established.</summary>
+    public event OnDisconnectEventHandler OnDisconnect;
+
+    public TCP(string ipAddress, int port, DataHandler dataHandler) {
+      _serverIpAddress = ipAddress;
+      _serverPort = port;
+      _dataHandler = dataHandler;
+    }
 
     /// <summary>Connects to the server.</summary>
     public void Connect() {
@@ -25,7 +40,7 @@ namespace UnityEngineNetwork.Client {
 
       _receiveBuffer = new byte[Constants.DataBufferSize];
 
-      Socket.BeginConnect(Client.Instance.ServerIpAddress, Client.Instance.Port, ConnectCallback, Socket);
+      Socket.BeginConnect(_serverIpAddress, _serverPort, ConnectCallback, Socket);
     }
 
     private void ConnectCallback(IAsyncResult result) {
@@ -33,10 +48,8 @@ namespace UnityEngineNetwork.Client {
         Socket.EndConnect(result);
       }
       else {
-        throw new ConnectionFailedException($"Unable to connect to Server {Client.Instance.ServerIpAddress}.");
+        throw new ConnectionFailedException($"Unable to connect to Server {_serverIpAddress}.");
       }
-
-      Client.Instance.IsConnected = true;
 
       OnConnect?.Invoke(this, new EventArgs());
 
@@ -51,7 +64,7 @@ namespace UnityEngineNetwork.Client {
       try {
         int byteLength = _networkStream.EndRead(result);
         if (byteLength <= 0) {
-          Client.Instance.Disconnect();
+          OnDisconnect?.Invoke(this, new EventArgs());
           return;
         }
 
@@ -63,17 +76,13 @@ namespace UnityEngineNetwork.Client {
         _networkStream.BeginRead(_receiveBuffer, 0, Constants.DataBufferSize, ReceiveCallback, null);
       }
       catch (Exception ex) {
-        Console.WriteLine($"Error receiving TCP data: {ex}");
-        Client.Instance.Disconnect();
+        OnDisconnect?.Invoke(this, new EventArgs());
       }
     }
 
     /// <summary>Sends a packet to the server.</summary>
     /// <param name="packet">The packet</param>
     public void SendData(Packet packet) {
-      if (!Client.Instance.IsConnected) {
-        throw new ConnectionFailedException("The client is not connected to the server!");
-      }
       if (Socket != null) {
         _networkStream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null);
       }
@@ -93,11 +102,7 @@ namespace UnityEngineNetwork.Client {
 
       while (packetLength > 0 && packetLength <= _receivedData.UnreadLength()) {
         byte[] packetBytes = _receivedData.ReadBytes(packetLength);
-        Client.Instance.ThreadManager.ExecuteOnMainThread(() => {
-          using (Packet packet = new Packet(packetBytes)) {
-            Client.Instance.HandleReceivedPacket(packet);
-          }
-        });
+        _dataHandler.Handle(packetBytes);
 
         packetLength = 0;
         if (_receivedData.UnreadLength() >= 4) {
@@ -118,6 +123,9 @@ namespace UnityEngineNetwork.Client {
     /// <summary>Disconnects from the server.</summary>
     public void Disconnect() {
       Socket.Close();
+      if (_networkStream != null) {
+        _networkStream.Close();
+      }
       _networkStream = null;
       _receiveBuffer = null;
       _receivedData = null;

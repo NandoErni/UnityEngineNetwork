@@ -10,20 +10,30 @@ namespace UnityEngineNetwork.Client {
 
     private UdpClient _socket;
 
+    private DataHandler _dataHandler;
+
+    private int _clientId;
+
+    /// <summary>Gets invoked when a connection to the server has been established.</summary>
+    public event OnDisconnectEventHandler OnDisconnect;
+
     /// <summary>Creates a new UDP object and parses the given ip address and port</summary>
     /// <param name="ipAddress">The ip address</param>
     /// <param name="port">The port</param>
-    public UDP(string ipAddress, int port) {
+    public UDP(string ipAddress, int port, DataHandler dataHandler) {
       _endPoint = new IPEndPoint(IPAddress.Parse(ipAddress), port);
+      _dataHandler = dataHandler;
     }
 
     /// <summary>Connects to the server through a certain port.</summary>
     /// <param name="localPort">The local port</param>
-    public void Connect(int localPort) {
+    public void Connect(int localPort, int clientId) {
       _socket = new UdpClient(localPort);
 
       _socket.Connect(_endPoint);
       _socket.BeginReceive(ReceiveCallback, null);
+
+      _clientId = clientId;
 
       using (Packet packet = new Packet()) {
         SendData(packet);
@@ -33,7 +43,7 @@ namespace UnityEngineNetwork.Client {
     /// <summary>Sends the given packet to the server.</summary>
     /// <param name="packet">The packet</param>
     public void SendData(Packet packet) {
-      packet.InsertInt(Client.Instance.Id);
+      packet.InsertInt(_clientId);
 
       if (_socket != null) {
         _socket.BeginSend(packet.ToArray(), packet.Length(), null, null);
@@ -46,13 +56,13 @@ namespace UnityEngineNetwork.Client {
         _socket.BeginReceive(ReceiveCallback, null);
 
         if (data.Length < 4) {
-          Client.Instance.Disconnect();
+          OnDisconnect?.Invoke(this, new EventArgs());
           return;
         }
         HandleData(data);
       }
       catch (Exception) {
-        Client.Instance.Disconnect();
+        OnDisconnect?.Invoke(this, new EventArgs());
       }
     }
 
@@ -62,11 +72,7 @@ namespace UnityEngineNetwork.Client {
         data = packet.ReadBytes(packetLength);
       }
 
-      Client.Instance.ThreadManager.ExecuteOnMainThread(() => {
-        using (Packet packet = new Packet(data)) {
-          Client.Instance.HandleReceivedPacket(packet);
-        }
-      });
+      _dataHandler.Handle(data);
     }
 
     /// <summary>Disconnects from the server.</summary>
@@ -74,7 +80,6 @@ namespace UnityEngineNetwork.Client {
       if (_socket != null) {
         _socket.Close();
       }
-      _endPoint = null;
       _socket = null;
     }
   }

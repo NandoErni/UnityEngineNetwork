@@ -3,14 +3,24 @@ using UnityEngineNetwork;
 using UnityEngineNetwork.Client;
 
 namespace ConsoleExample.Client {
-  public class ServerRepository : BaseServerRepository {
-    public void SendNumbers() {
+  public class ServerRepository {
+
+    private IClient _client;
+
+    public ServerRepository(IClient client) {
+      _client = client;
+    }
+
+    public void SendNumbers(Protocol protocol) {
+      Console.WriteLine();
       Console.WriteLine("Client: Sending numbers!");
       using (Packet packet = new Packet((int)RequestId.SumNum)) {
         packet.Write(3);
         packet.Write(5);
 
-        SendUDPData(packet);
+        if (protocol.Equals(Protocol.TCP)) _client.SendTCPData(packet);
+        if (protocol.Equals(Protocol.UDP)) _client.SendUDPData(packet);
+
       }
     }
 

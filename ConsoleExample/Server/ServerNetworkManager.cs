@@ -1,4 +1,6 @@
-﻿using NetworkServer = UnityEngineNetwork.Server;
+﻿using System;
+using UnityEngineNetwork;
+using NetworkServer = UnityEngineNetwork.Server;
 
 namespace ConsoleExample.Server {
   public class ServerNetworkManager {
@@ -11,8 +13,12 @@ namespace ConsoleExample.Server {
       _instance.AddPacketHandler((int)RequestId.SumNum, repository.HandleNumbers);
     }
 
-    public void SendSomeNums() {
-      _repository.SendNumbers();
+    public void SendSomeNums(Protocol protocol) {
+      _repository.SendNumbers(protocol);
+    }
+
+    internal void SendSomeNums(object protocl) {
+      throw new NotImplementedException();
     }
 
     public void Update() {

@@ -115,7 +115,15 @@ namespace UnityEngineNetwork.Server {
     }
 
     internal void HandleReceivedPacket(int id, Packet packet) {
-      _packetHandler.Get(packet.ReadInt())(id, packet);
+      if (packet == null) {
+        return;
+      }
+
+      PacketHandlerDelegate handler = _packetHandler.Get(packet.ReadInt());
+
+      if (handler != null) {
+        handler(id, packet);
+      }
     }
 
     /// <inheritdoc/>

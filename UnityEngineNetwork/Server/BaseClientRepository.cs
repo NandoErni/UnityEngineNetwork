@@ -89,7 +89,7 @@ namespace UnityEngineNetwork.Server {
 
       Server.Instance.Clients[clientId].Username = username;
 
-      OnWelcomeReceived?.Invoke(this, new WelcomeEventArgs(username));
+      OnWelcomeReceived?.Invoke(this, new WelcomeEventArgs(username, clientId));
     }
   }
 }
